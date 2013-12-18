@@ -7,7 +7,7 @@
 		<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" media="screen">
 	</head>
 	<body>
-		<h1 class="text-center">Hello World</h1>
+		
 
 		<!-- jQuery -->
 		<script src="//code.jquery.com/jquery.js"></script>
@@ -15,5 +15,7 @@
 		<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.1/angular.min.js"></script>
 		<!-- Bootstrap JavaScript -->
 		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+		<!-- Application -->
+		<script src="static/js/app.js"></script>
 	</body>
 </html>

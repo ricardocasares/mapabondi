@@ -29,6 +29,10 @@ $app->group('/api', function() use ($app) {
 	$app->get('/lines/:line/routes', function($line) use ($app) {
 		getLineRoutes($line,$app);
 	});
+	// get line routes
+	$app->get('/find', function() use ($app) {
+		findLinesByCoordinates($app);
+	});
 });
 
 function getTransports($app) {
@@ -93,6 +97,46 @@ function getLineRoutes($line, $app) {
 	}
 }
 
+function findLinesByCoordinates($app) {
+	$start = $app->request->params('startGeo');
+	$end   = $app->request->params('endGeo');
+	try {
+		$lines = getLinesMatching($start,$end);
+		echo '{"lines": ' . json_encode($lines) . '}';
+	} catch(PDOException $e) {
+		echo '{"error":{"msg":'. $e->getMessage() .'}}';
+	}
+}
+
+function getLinesMatching($start,$end)
+{
+	$start = haversine($start);
+	$end = haversine($end);
+	return $start;
+}
+
+function haversine($point)
+{
+	$point = explode(',',$point);
+
+	$sql = "SELECT `lines`.id,`lines`.name,`lines`.image, transports.name, transports.phone, transports.url FROM `lines`
+				JOIN (SELECT line_id, lat, lng,
+				(6378.10 * acos(cos(radians(:lat)) * cos(radians( lat ))	* cos(radians(lng) - radians(:lng)) + sin(radians(:lat))
+				* sin(radians(lat)))) AS distance
+				FROM routes
+				HAVING distance < 5 ORDER BY distance) AS matches ON matches.line_id = `lines`.id
+				JOIN transports ON transports.id = `lines`.transport_id
+				GROUP BY line_id";
+
+	$db = getConnection();
+	$sth = $db->prepare($sql);
+	$sth->bindParam('lat',$point[0]);
+	$sth->bindParam('lng',$point[1]);
+	$sth->execute();
+	$lines = $sth->fetchAll(PDO::FETCH_OBJ);
+	return $lines;
+}
+
 // RUN!!
 $app->run();
 
@@ -103,7 +147,55 @@ function getConnection() {
 	$dbpass="1234";
 	$dbname="mapabondi";
 	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
-	$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	return $dbh;
 }
+
+class MyPDOStatement extends PDOStatement
+{
+  protected $_debugValues = null;
+
+  protected function __construct()
+  {
+    // need this empty construct()!
+  }
+
+  public function execute($values=array())
+  {
+    $this->_debugValues = $values;
+    try {
+      $t = parent::execute($values);
+      // maybe do some logging here?
+    } catch (PDOException $e) {
+      // maybe do some logging here?
+      throw $e;
+    }
+
+    return $t;
+  }
+
+  public function _debugQuery($replaced=true)
+  {
+    $q = $this->queryString;
+
+    if (!$replaced) {
+      return $q;
+    }
+
+    return preg_replace_callback('/:([0-9a-z_]+)/i', array($this, '_debugReplace'), $q);
+  }
+
+  protected function _debugReplace($m)
+  {
+    $v = $this->_debugValues[$m[1]];
+    if ($v === null) {
+      return "NULL";
+    }
+    if (!is_numeric($v)) {
+      $v = str_replace("'", "''", $v);
+    }
+
+    return "'". $v ."'";
+  }
+}
+
 ?>

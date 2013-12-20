@@ -9,7 +9,6 @@ web1:
   name: mapabondi
 
   document_root: public
-  apache_log_level: warnx
   
   php_extensions:
     - zip

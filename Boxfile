@@ -3,6 +3,7 @@ global:
     - SLIM_MODE: production
 db1:
   type: mysql
+  name: mapabondi
 
 web1:
   name: mapabondi

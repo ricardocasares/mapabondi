@@ -4,8 +4,30 @@ require '../vendor/autoload.php';
 
 // slim configuration
 $app = new \Slim\Slim(array(
-	'templates.path' => '../views'
-	));
+	'templates.path' => '../views',
+	'mode' => isset($_SERVER['SLIM_MODE']) ? $_SERVER['SLIM_MODE'] : 'development'
+));
+
+$app->configureMode('production', function () use ($app) {
+    $app->config(array(
+        'log.enable' => true,
+        'debug' => false,
+        'database' => 'mysql:mysql:host=localhost;dbname=mapabondi',
+        'dbuser' => 'root',
+        'dbpass' => '1234'
+    ));
+});
+
+// Only invoked if mode is "development"
+$app->configureMode('development', function () use ($app) {
+    $app->config(array(
+        'log.enable' => false,
+        'debug' => true,
+        'database' => 'mysql:mysql:host=localhost;dbname=mapabondi',
+        'dbuser' => 'root',
+        'dbpass' => '1234'
+    ));
+});
 
 // main route
 $app->get('/', function () use ($app) {
@@ -39,7 +61,7 @@ function getTransports($app) {
 	$app->response->headers->set('Content-Type', 'application/json');
 	$sql = "SELECT * FROM transports";
 	try {
-		$db = getConnection();
+		$db = getConnection($app);
 		$sth = $db->query($sql);
 		$transports = $sth->fetchAll(PDO::FETCH_OBJ);
 		$db = null;
@@ -53,7 +75,7 @@ function getTransportById($transport, $app) {
 	$app->response->headers->set('Content-Type', 'application/json');
 	$sql = "SELECT * FROM transports WHERE id = :transport";
 	try {
-		$db = getConnection();
+		$db = getConnection($app);
 		$sth = $db->prepare($sql);
 		$sth->bindParam("transport", $transport);
 		$sth->execute();
@@ -69,7 +91,7 @@ function getTransportLines($transport, $app) {
 	$app->response->headers->set('Content-Type', 'application/json');
 	$sql = "SELECT * FROM `lines` WHERE transport_id = :transport";
 	try {
-		$db = getConnection();
+		$db = getConnection($app);
 		$sth = $db->prepare($sql);
 		$sth->bindParam('transport',$transport);
 		$sth->execute();
@@ -85,7 +107,7 @@ function getLineRoutes($line, $app) {
 	$app->response->headers->set('Content-Type', 'application/json');
 	$sql = "SELECT * FROM `routes` WHERE line_id = :line";
 	try {
-		$db = getConnection();
+		$db = getConnection($app);
 		$sth = $db->prepare($sql);
 		$sth->bindParam('line',$line);
 		$sth->execute();
@@ -102,7 +124,7 @@ function findLinesByCoordinates($app) {
 	$end   = $app->request->params('end');
 	$app->response->headers->set('Content-Type', 'application/json');
 	try {
-		$lines = getLinesMatching($start,$end);
+		$lines = getLinesMatching($start,$end,$app);
 
 		echo '{"lines": ' . json_encode($lines,JSON_UNESCAPED_UNICODE) . '}';
 	} catch(PDOException $e) {
@@ -110,10 +132,10 @@ function findLinesByCoordinates($app) {
 	}
 }
 
-function getLinesMatching($start,$end)
+function getLinesMatching($start,$end,$app)
 {
-	$start = haversine($start);
-	$end = haversine($end);
+	$start = haversine($start,$app);
+	$end = haversine($end,$app);
 	
 	if(!$start OR !$end) return FALSE;
 
@@ -122,7 +144,7 @@ function getLinesMatching($start,$end)
 	return array_map("unserialize", array_unique(array_map("serialize", $result)));
 }
 
-function haversine($point)
+function haversine($point,$app)
 {
 	$point = explode(',',$point);
 
@@ -135,7 +157,7 @@ function haversine($point)
 				GROUP BY line_id
 				ORDER BY distance";
 
-	$db = getConnection();
+	$db = getConnection($app);
 	$sth = $db->prepare($sql);
 	$sth->bindParam('lat',$point[0]);
 	$sth->bindParam('lng',$point[1]);
@@ -148,61 +170,13 @@ function haversine($point)
 $app->run();
 
 // database connection configuration
-function getConnection() {
+function getConnection($app) {
 	$dbhost="localhost";
 	$dbuser="root";
 	$dbpass="1234";
 	$dbname="mapabondi";
-	$dbh = new PDO("mysql:host=$dbhost;dbname=$dbname", $dbuser, $dbpass);
+	$dbh = new PDO($app->config('database'), $app->config('dbuser'), $app->config('dbpass'));
 	return $dbh;
-}
-
-class MyPDOStatement extends PDOStatement
-{
-  protected $_debugValues = null;
-
-  protected function __construct()
-  {
-    // need this empty construct()!
-  }
-
-  public function execute($values=array())
-  {
-    $this->_debugValues = $values;
-    try {
-      $t = parent::execute($values);
-      // maybe do some logging here?
-    } catch (PDOException $e) {
-      // maybe do some logging here?
-      throw $e;
-    }
-
-    return $t;
-  }
-
-  public function _debugQuery($replaced=true)
-  {
-    $q = $this->queryString;
-
-    if (!$replaced) {
-      return $q;
-    }
-
-    return preg_replace_callback('/:([0-9a-z_]+)/i', array($this, '_debugReplace'), $q);
-  }
-
-  protected function _debugReplace($m)
-  {
-    $v = $this->_debugValues[$m[1]];
-    if ($v === null) {
-      return "NULL";
-    }
-    if (!is_numeric($v)) {
-      $v = str_replace("'", "''", $v);
-    }
-
-    return "'". $v ."'";
-  }
 }
 
 ?>

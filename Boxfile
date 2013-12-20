@@ -9,7 +9,7 @@ web1:
 
   document_root: public
   apache_log_level: warnx
-  
+
   php_date_timezone: "America/Argentina/San_Juan"
   php_default_locale: "es_AR"
 
@@ -17,4 +17,5 @@ web1:
     - "mysql -h $DB1_HOST --port $DB1_PORT -u $DB1_USER -p $DB1_PASS $DB1_NAME < mapabondi.sql"
 
   after_build:
-    - "if [ ! -f composer.phar ]; then curl -s http://getcomposer.org/installer | php; fi; php composer.phar install"
+    - "curl -s https://getcomposer.org/installer | php"
+    - "php composer.phar install"

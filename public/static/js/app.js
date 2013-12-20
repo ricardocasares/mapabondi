@@ -44,6 +44,7 @@ $formReset.click(function(e){
   $start.val('');
   $end.val('');
   $searchResults.slideUp('fast');
+  clearOverlays();
 });
 $searchForm.submit(function(e){
   $.getJSON(endpoints.find,$(this).serialize()).done(function(data){
@@ -151,7 +152,7 @@ function getRoutes(e,el){
     lines.push(new google.maps.Polyline({
       map: map,
       path: line,
-      strokeColor: color,
+      strokeColor: "#a43796",
       strokeOpacity: 1.0,
       strokeWeight: 4
     }));

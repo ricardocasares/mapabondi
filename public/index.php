@@ -158,12 +158,10 @@ function getLinesMatching($start,$end,$app)
 {
 	$start = haversine($start,$app);
 	$end = haversine($end,$app);
-	
+
 	if(!$start OR !$end) return FALSE;
 
-	$result = array_merge($start,$end);
-
-	return array_map("unserialize", array_unique(array_map("serialize", $result)));
+	return array_intersect_key($end,$start);
 }
 
 // perform sql version of haversine formula
@@ -176,7 +174,7 @@ function haversine($point,$app)
 				(6378.10 * acos(cos(radians(:lat)) * cos(radians( lat ))	* cos(radians(lng) - radians(:lng)) + sin(radians(:lat))
 				* sin(radians(lat)))) AS distance
 				FROM routes
-				HAVING distance < 0.2 ORDER BY distance) AS matches ON matches.line_id = `lines`.id
+				HAVING distance < 0.2 ORDER BY distance ASC) AS matches ON matches.line_id = `lines`.id
 				GROUP BY line_id
 				ORDER BY distance";
 

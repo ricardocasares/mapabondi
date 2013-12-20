@@ -61,10 +61,10 @@
             <input type="text" class="form-control" id="endGeo" placeholder="Libertador Oeste 2420">
             <input type="hidden" name="end" id="end">
           </div>
-          <button class="btn btn-default">
+          <button class="btn btn-sm btn-default">
             Buscar
           </button>
-          <button type="reset" class="formReset btn btn-default">
+          <button type="reset" class="formReset btn btn-sm btn-default">
             <i class="fa fa-trash-o"></i> Reiniciar
           </button>
         </form>
@@ -109,8 +109,11 @@
           </ul>
         </div>
       {{else}}
-        <div class="alert alert-warning">
-          No hubo resultados
+        <div class="alert alert-info">
+          <p class="text-center"><i class="fa fa-warning fa-5x"></i></p>
+          <p class="text-center">
+            No hubo resultados
+          </p>
         </div>
       {{/if}}
     </script>

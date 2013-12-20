@@ -16,6 +16,7 @@ html, body {
 	height:100%;
 	font-family: "Raleway", sans-serif;
 }
+
 #wrapper {
   padding-left: 250px;
   transition: all 0.4s ease 0s;
@@ -103,8 +104,9 @@ li.media {
 .results {
 	display:none;
 	padding: 10px 20px;
-	height: 200px;
-	overflow-y: scroll;
+	height: auto;
+	max-height:250px;
+	overflow-y: auto;
 	background: #FFF;
 	text-indent: 0;
 	border-bottom: 1px solid #DDD;

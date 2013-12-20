@@ -17,8 +17,7 @@ web1:
   php_default_locale: "es_AR"
 
   before_deploy:
-    - "mysql -h $DB1_HOST --port $DB1_PORT -u $DB1_USER -p $DB1_PASS $DB1_NAME < mapabondi.sql"
+    - "mysql -h $DB1_HOST --port $DB1_PORT -u $DB1_USER -p$DB1_PASS $DB1_NAME < mapabondi.sql"
 
   after_build:
-    - "curl -s https://getcomposer.org/installer | php"
-    - "php composer.phar install"
+    - "if [ ! -f composer.phar ]; then curl -s http://getcomposer.org/installer | php; fi; php composer.phar install --prefer-source"

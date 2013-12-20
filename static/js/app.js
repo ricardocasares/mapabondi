@@ -1,24 +1,61 @@
+// setup vars
 var $menuToggle = $("#menu-toggle")
   , $wrapper = $('#wrapper')
+  , $transportsToggle = $('.transportsToggle')
+  , $transports = $('.transports')
   , $searchToggle = $('.searchToggle')
   , $searchForm = $('.form-sidebar')
-  , $searchResults = $('.results');
+  , $formReset = $('.formReset')
+  , $searchResults = $('.results')
+  , startGeo = document.getElementById("startGeo")
+  , endGeo = document.getElementById("endGeo")
+  , $start = $('#start')
+  , $end = $('#end')
+  , startAuto = new google.maps.places.Autocomplete(startGeo)
+  , endAuto = new google.maps.places.Autocomplete(endGeo)
+  , startMarker = new google.maps.Marker()
+  , endMarker = new google.maps.Marker()
+  , line = []
+  , lines = []
+  , map
+  , endpoints = {
+    transports: "/api/transports",
+    transport: "/api/transports/:id",
+    lines: "/api/transports/:id/lines",
+    routes: "/api/lines/:id/routes",
+    find: "/api/find",
+  };
 
+// Event listeners
 $menuToggle.click(function(e) {
   e.preventDefault();
   $wrapper.toggleClass("active");
+});
+$transportsToggle.click(function(e){
+  e.preventDefault();
+  $transports.toggle();
+  if($transports.is(':visible')) getTransports(e);
 });
 $searchToggle.click(function(e){
   e.preventDefault();
   $searchForm.toggle();
 });
+$formReset.click(function(e){
+  $start.val('');
+  $end.val('');
+  $searchResults.slideUp('fast');
+});
 $searchForm.submit(function(e){
-  $.getJSON('/api/find',$(this).serialize()).done(function(data){
-    $searchResults.html('<img height="50px" class="thumbnail" src="'+data.lines[0].image+'"/>');
+  $.getJSON(endpoints.find,$(this).serialize()).done(function(data){
+    var html = render('#results-tpl',data,'.results');
+    html.slideDown('fast').find('.btn').click(function(e){
+      getRoutes(e,$(this));
+    });
   });
   event.preventDefault();
 });
 
+// initializes map and listeners
 function initialize() {
   // set map options
   var mapOptions = {
@@ -29,23 +66,13 @@ function initialize() {
   };
   
   // instantiate map
-  var map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
-  
-  // setup vars
-  var start = document.getElementById("start")
-    , end = document.getElementById("end")
-    , startGeo = $('#startGeo')
-    , endGeo = $('#endGeo')
-    , startAuto = new google.maps.places.Autocomplete(start)
-    , endAuto = new google.maps.places.Autocomplete(end)
-    , startMarker = new google.maps.Marker({ map: map })
-    , endMarker = new google.maps.Marker({ map: map });
+  map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);;
 
   google.maps.event.addListener(startAuto, 'place_changed', function(){
-    autoChanged(startAuto,startMarker,startGeo);
+    autoChanged(startAuto,startMarker,$start);
   });
   google.maps.event.addListener(endAuto, 'place_changed', function(){
-    autoChanged(endAuto,endMarker,endGeo);
+    autoChanged(endAuto,endMarker,$end);
   });
 
   // autocomplete change handler
@@ -66,18 +93,94 @@ function initialize() {
       map.setCenter(place.geometry.location);
       map.setZoom(17); 
     }
-    marker.setIcon({
-      url: place.icon,
-      size: new google.maps.Size(71, 71),
-      origin: new google.maps.Point(0, 0),
-      anchor: new google.maps.Point(17, 34),
-      scaledSize: new google.maps.Size(35, 35)
-    });
+
+    marker.setMap(map);
     marker.setPosition(place.geometry.location);
     marker.setVisible(true);    
   }
 }
 
+// render handlebars templates
+function render(template,data,outlet){
+  var src = $(template).html();
+  $(outlet).html(Handlebars.compile(src)(data));
+  return $(outlet);
+}
+
+function getTransports(e,el) {
+  e.preventDefault();
+  $.getJSON(endpoints.transports).success(function(data){
+    var html = render('#transports-tpl',data,'.transports');
+    html.find('.getTransportLines').click(function(e){
+      getTransportLines(e,$(this));
+    });
+  });
+}
+
+function getTransportLines(e,el) {
+  e.preventDefault();
+  var id = el.attr('data-transport-id');
+  var url = endpoints.lines.replace(':id',id);
+
+  $.getJSON(url).success(function(data){
+    var html = render('#lines-tpl',data,'.lines-'+id);
+    html.toggle();
+    html.find('.road').click(function(e){
+      getRoutes(e,$(this));
+    });
+  });
+}
+
+// get routes from lines and plots them on the map
+function getRoutes(e,el){
+  e.preventDefault();
+  clearOverlays();
+
+  var id = el.attr('data-line-id')
+    , color = getColor();
+
+  var url = endpoints.routes.replace(':id',id);
+
+  $.getJSON(url).success(function(data){
+    $.each(data.routes, function(index,route) {
+      line.push(new google.maps.LatLng(route.lat,route.lng));
+    });
+
+    lines.push(new google.maps.Polyline({
+      map: map,
+      path: line,
+      strokeColor: color,
+      strokeOpacity: 1.0,
+      strokeWeight: 4
+    }));
+  });
+}
+
+// clears map overlays
+function clearOverlays() {
+  if(line.length > 0) {
+    line = [];
+  }
+  if(lines.length > 0) {
+    $.each(lines,function(i,l){
+      lines[i].setMap(null);
+      lines.pop();
+    });
+  }
+}
+
+// generates a random color
+function getColor() {
+  return '#'+Math.floor(Math.random()*16777215).toString(16);
+}
+
+// handlebars helper: truncates text
+Handlebars.registerHelper('trunc', function(text,size) {
+  if(text.length <= size) return text;
+  return text.substring(0,size) + " ...";
+});
+
+// init map
 $(function(){
   initialize();
 });

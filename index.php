@@ -98,11 +98,13 @@ function getLineRoutes($line, $app) {
 }
 
 function findLinesByCoordinates($app) {
-	$start = $app->request->params('startGeo');
-	$end   = $app->request->params('endGeo');
+	$start = $app->request->params('start');
+	$end   = $app->request->params('end');
+	$app->response->headers->set('Content-Type', 'application/json');
 	try {
 		$lines = getLinesMatching($start,$end);
-		echo '{"lines": ' . json_encode($lines) . '}';
+
+		echo '{"lines": ' . json_encode($lines,JSON_UNESCAPED_UNICODE) . '}';
 	} catch(PDOException $e) {
 		echo '{"error":{"msg":'. $e->getMessage() .'}}';
 	}
@@ -112,28 +114,33 @@ function getLinesMatching($start,$end)
 {
 	$start = haversine($start);
 	$end = haversine($end);
-	return $start;
+	
+	if(!$start OR !$end) return FALSE;
+
+	$result = array_merge($start,$end);
+
+	return array_map("unserialize", array_unique(array_map("serialize", $result)));
 }
 
 function haversine($point)
 {
 	$point = explode(',',$point);
 
-	$sql = "SELECT `lines`.id,`lines`.name,`lines`.image, transports.name, transports.phone, transports.url FROM `lines`
+	$sql = "SELECT `lines`.name, `lines`.id FROM `lines`
 				JOIN (SELECT line_id, lat, lng,
 				(6378.10 * acos(cos(radians(:lat)) * cos(radians( lat ))	* cos(radians(lng) - radians(:lng)) + sin(radians(:lat))
 				* sin(radians(lat)))) AS distance
 				FROM routes
-				HAVING distance < 5 ORDER BY distance) AS matches ON matches.line_id = `lines`.id
-				JOIN transports ON transports.id = `lines`.transport_id
-				GROUP BY line_id";
+				HAVING distance < 0.2 ORDER BY distance) AS matches ON matches.line_id = `lines`.id
+				GROUP BY line_id
+				ORDER BY distance";
 
 	$db = getConnection();
 	$sth = $db->prepare($sql);
 	$sth->bindParam('lat',$point[0]);
 	$sth->bindParam('lng',$point[1]);
 	$sth->execute();
-	$lines = $sth->fetchAll(PDO::FETCH_OBJ);
+	$lines = $sth->fetchAll(PDO::FETCH_ASSOC);
 	return $lines;
 }
 

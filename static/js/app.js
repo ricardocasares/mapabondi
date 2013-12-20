@@ -19,12 +19,12 @@ var $menuToggle = $("#menu-toggle")
   , lines = []
   , map
   , endpoints = {
-    transports: "/api/transports",
-    transport: "/api/transports/:id",
-    lines: "/api/transports/:id/lines",
-    routes: "/api/lines/:id/routes",
-    find: "/api/find",
-  };
+      transports: "/api/transports",
+      transport: "/api/transports/:id",
+      lines: "/api/transports/:id/lines",
+      routes: "/api/lines/:id/routes",
+      find: "/api/find",
+    };
 
 // Event listeners
 $menuToggle.click(function(e) {
@@ -107,6 +107,7 @@ function render(template,data,outlet){
   return $(outlet);
 }
 
+// shows transports
 function getTransports(e,el) {
   e.preventDefault();
   $.getJSON(endpoints.transports).success(function(data){
@@ -117,6 +118,7 @@ function getTransports(e,el) {
   });
 }
 
+// get transports lines
 function getTransportLines(e,el) {
   e.preventDefault();
   var id = el.attr('data-transport-id');
@@ -153,6 +155,7 @@ function getRoutes(e,el){
       strokeOpacity: 1.0,
       strokeWeight: 4
     }));
+    zoomToObject(lines[lines.length-1]);
   });
 }
 
@@ -167,6 +170,15 @@ function clearOverlays() {
       lines.pop();
     });
   }
+}
+
+function zoomToObject(obj){
+    var bounds = new google.maps.LatLngBounds();
+    var points = obj.getPath().getArray();
+    for (var n = 0; n < points.length ; n++){
+        bounds.extend(points[n]);
+    }
+    map.fitBounds(bounds);
 }
 
 // generates a random color

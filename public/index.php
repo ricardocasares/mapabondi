@@ -1,10 +1,10 @@
 <?php 
 
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 
 // slim configuration
 $app = new \Slim\Slim(array(
-	'templates.path' => 'views'
+	'templates.path' => '../views'
 	));
 
 // main route

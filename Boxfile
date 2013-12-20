@@ -9,6 +9,9 @@ web1:
 
   document_root: public
   apache_log_level: warnx
+  
+  php_extensions:
+    - zip
 
   php_date_timezone: "America/Argentina/San_Juan"
   php_default_locale: "es_AR"

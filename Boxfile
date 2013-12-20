@@ -1,6 +1,6 @@
 global:
   env:
-      - SLIM_MODE: production
+    - SLIM_MODE: production
 db1:
   type: mysql
 

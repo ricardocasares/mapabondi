@@ -1,39 +1,55 @@
 <?php 
 
+/**
+ * Mapabondi
+ * @author rcasares
+ **/
+
+// require composer autoload
 require '../vendor/autoload.php';
 
-// slim configuration
+/**
+ * CONFIGURATION
+ **/
+
+// slim instance
 $app = new \Slim\Slim(array(
 	'templates.path' => '../views',
 	'mode' => isset($_SERVER['SLIM_MODE']) ? $_SERVER['SLIM_MODE'] : 'development'
 ));
 
+// set production configuration
 $app->configureMode('production', function () use ($app) {
     $app->config(array(
         'log.enable' => true,
         'debug' => false,
-        'database' => 'mysql:mysql:host=localhost;dbname=mapabondi',
+        'dbhost' => $_SERVER["DB1_HOST"],
+        'dbname' => $_SERVER["DB1_NAME"],
+        'dbuser' => $_SERVER["DB1_USER"],
+        'dbpass' => $_SERVER["DB1_PASS"]
+    ));
+});
+
+// set development configuration
+$app->configureMode('development', function () use ($app) {
+    $app->config(array(
+        'dbhost' => 'localhost',
+        'dbname' => 'mapabondi',
         'dbuser' => 'root',
         'dbpass' => '1234'
     ));
 });
 
-// Only invoked if mode is "development"
-$app->configureMode('development', function () use ($app) {
-    $app->config(array(
-        'log.enable' => false,
-        'debug' => true,
-        'database' => 'mysql:mysql:host=localhost;dbname=mapabondi',
-        'dbuser' => 'root',
-        'dbpass' => '1234'
-    ));
-});
+/**
+ * ROUTES
+ **/
 
 // main route
 $app->get('/', function () use ($app) {
 	$app->render('layout.php',array());
 });
 
+// REST API routes
 $app->group('/api', function() use ($app) {
 	// get all transports
 	$app->get('/transports', function() use ($app) {
@@ -166,16 +182,19 @@ function haversine($point,$app)
 	return $lines;
 }
 
-// RUN!!
+// hey ho, let's go!
 $app->run();
 
 // database connection configuration
 function getConnection($app) {
-	$dbhost="localhost";
-	$dbuser="root";
-	$dbpass="1234";
-	$dbname="mapabondi";
-	$dbh = new PDO($app->config('database'), $app->config('dbuser'), $app->config('dbpass'));
+	// get database config
+	$dbhost = $app->config('dbhost');
+	$dbuser = $app->config('dbuser');
+	$dbpass = $app->config('dbpass');
+	$dbname = $app->config('dbname');
+	// set db handler
+	$dbh    = new PDO("mysql:host=$dbhost;dbname=$dbname", $app->config('dbuser'), $app->config('dbpass'));
+	// return db handler
 	return $dbh;
 }
 

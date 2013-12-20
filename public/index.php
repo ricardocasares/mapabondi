@@ -73,6 +73,7 @@ $app->group('/api', function() use ($app) {
 	});
 });
 
+// get all transports
 function getTransports($app) {
 	$app->response->headers->set('Content-Type', 'application/json');
 	$sql = "SELECT * FROM transports";
@@ -87,6 +88,7 @@ function getTransports($app) {
 	}
 }
 
+// get transport by id
 function getTransportById($transport, $app) {
 	$app->response->headers->set('Content-Type', 'application/json');
 	$sql = "SELECT * FROM transports WHERE id = :transport";
@@ -103,6 +105,7 @@ function getTransportById($transport, $app) {
 	}
 }
 
+// get all transport lines
 function getTransportLines($transport, $app) {
 	$app->response->headers->set('Content-Type', 'application/json');
 	$sql = "SELECT * FROM `lines` WHERE transport_id = :transport";
@@ -119,6 +122,7 @@ function getTransportLines($transport, $app) {
 	}
 }
 
+// get line routes
 function getLineRoutes($line, $app) {
 	$app->response->headers->set('Content-Type', 'application/json');
 	$sql = "SELECT * FROM `routes` WHERE line_id = :line";
@@ -135,6 +139,7 @@ function getLineRoutes($line, $app) {
 	}
 }
 
+// finds lines by origin/destination coordinates
 function findLinesByCoordinates($app) {
 	$start = $app->request->params('start');
 	$end   = $app->request->params('end');
@@ -148,6 +153,7 @@ function findLinesByCoordinates($app) {
 	}
 }
 
+// compare lines in both ends and return unique array
 function getLinesMatching($start,$end,$app)
 {
 	$start = haversine($start,$app);
@@ -160,6 +166,7 @@ function getLinesMatching($start,$end,$app)
 	return array_map("unserialize", array_unique(array_map("serialize", $result)));
 }
 
+// perform sql version of haversine formula
 function haversine($point,$app)
 {
 	$point = explode(',',$point);

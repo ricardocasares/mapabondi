@@ -12,13 +12,14 @@ web1:
 
   php_version: 5.3.10
   php_extensions:
-      - json
-      - pdo
-      - pdo_mysql
+    - json
+    - pdo
+    - pdo_mysql
   php_date_timezone: "America/Argentina/San_Juan"
   php_default_locale: "es_AR"
-  
+
   before_deploy:
-  	- "mysql -h $DB1_HOST --port $DB1_PORT -u $DB1_USER -p $DB1_PASS $DB1_NAME < mapabondi.sql"
+    - "mysql -h $DB1_HOST --port $DB1_PORT -u $DB1_USER -p $DB1_PASS $DB1_NAME < mapabondi.sql"
+
   after_build:
     - "if [ ! -f composer.phar ]; then curl -s http://getcomposer.org/installer | php; fi; php composer.phar install"

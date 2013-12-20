@@ -53,7 +53,7 @@ html, body {
   margin-left: -310px;
   left: 310px;
   width: 310px;
-  background: #F9F9F9;
+  background: #F9F9F9 url('../img/cubes.png');
   position: fixed;
   height: 100%;
   z-index: 1000;

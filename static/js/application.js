@@ -151,6 +151,7 @@
 
   // index route
   var index = function (ctx,next) {
+    clearOverlays();
     $('.transports').hide();
     $('.form-sidebar').hide();
   }

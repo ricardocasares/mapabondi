@@ -99,6 +99,7 @@ html, body {
 
 .media img {
 	width: 50px;
+	background: #CCC url('../img/no-img.gif') no-repeat;
 }
 
 .transport-info {

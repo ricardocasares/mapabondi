@@ -68,9 +68,9 @@
           <button class="btn btn-sm btn-default">
             Buscar
           </button>
-          <button type="reset" class="formReset btn btn-sm btn-default">
+          <a href="/search" class="btn btn-sm btn-default">
             <i class="fa fa-trash-o"></i> Reiniciar
-          </button>
+          </a>
         </form>
 
         <!-- Search results -->

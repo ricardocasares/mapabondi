@@ -148,7 +148,7 @@ function findLinesByCoordinates($app) {
 	$app->response->headers->set('Content-Type', 'application/json');
 	try {
 
-		$sql = "SELECT DISTINCT(`lines`.id),`lines`.name FROM (SELECT line_id, lat, lng,
+		$sql = "SELECT DISTINCT(`lines`.id),`lines`.transport_id,`lines`.name FROM (SELECT line_id, lat, lng,
 						(6378.10 * acos(cos(radians(:latStart)) * cos(radians( lat ))	* cos(radians(lng) - radians(:lngStart)) + sin(radians(:latStart))
 						* sin(radians(lat)))) AS distance
 						FROM routes

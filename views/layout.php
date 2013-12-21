@@ -13,6 +13,8 @@
     <!-- Bootstrap core CSS -->
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/css/select2.css" rel="stylesheet">
+    <link href="/static/css/select2-bootstrap.css" rel="stylesheet">
 
     <!-- Add custom CSS here -->
     <link href="/static/css/app.css" rel="stylesheet">
@@ -53,14 +55,14 @@
             <label for="start">
               <i class="fa fa-map-marker"></i> Dirección inicial
             </label>
-            <input type="text" class="form-control" id="startGeo" placeholder="Mendoza Sur 360">
+            <input type="text" id="startGeo" placeholder="Mendoza Sur 360">
             <input type="hidden" name="start" id="start">
           </div>
           <div class="form-group">
             <label for="end">
               <i class="fa fa-flag-checkered"></i> Dirección final
             </label>
-            <input type="text" class="form-control" id="endGeo" placeholder="Libertador Oeste 2420">
+            <input type="text" id="endGeo" placeholder="Libertador Oeste 2420">
             <input type="hidden" name="end" id="end">
           </div>
           <button class="btn btn-sm btn-default">
@@ -111,7 +113,7 @@
               {{trunc name 25}}
               <span class="pull-right">
                 <a href="/transports/{{transport_id}}/lines/{{id}}/plot" class="road btn btn-xs btn-default">
-                  <i class="fa fa-road"></i> Ver recorrido
+                  <i class="fa fa-road"></i> Ver
                 </a>
               </span>
             </li>
@@ -150,8 +152,66 @@
         {{/each}}
         </ul>
       {{else}}
-          <div class="alert alert-warning">
-            No existen transportes todavía
+        <div class="alert alert-info">
+          <p class="text-center"><i class="fa fa-warning fa-5x"></i></p>
+          <p class="text-center">
+            No hubo resultados
+          </p>
+        </div>
+      {{/if}}
+    </script>
+
+    <script id="transport-tpl" type="text/x-handlebars-template">
+      {{#if transports}}
+        <ul class="transports-list media-list">
+          <li class="media">
+            <img class="media-object pull-left" src="{{image}}" />
+            <div class="media-body">
+              <h5 class="media-heading">{{name}}</h5>
+              <ul class="fa-ul transport-info">
+                {{#if address}}<li><i class="fa-li fa fa-home"></i> {{address}}</li>{{/if}}
+                {{#if phone}}<li><i class="fa-li fa fa-phone"></i> {{phone}}</li>{{/if}}
+                {{#if url}}<li><i class="fa-li fa fa-globe"></i> <a href="{{url}}">Ver sitio web</a></li>{{/if}}
+              </ul>
+              <a href="/transports/{{id}}/lines" class="getTransportLines btn btn-xs btn-default">
+                Ver líneas
+              </a>
+            </div>
+            <div class="result-list lines-{{id}}"></div>
+          </li>       
+        </ul>
+      {{else}}
+          <div class="alert alert-info">
+            <p class="text-center"><i class="fa fa-warning fa-5x"></i></p>
+            <p class="text-center">
+              No hubo resultados
+            </p>
+          </div>
+      {{/if}}
+    </script>
+
+    <script id="results-tpl" type="text/x-handlebars-template">
+      {{#if lines}}
+        <div class="result-list media">
+          <ul class="list-unstyled">
+            {{#each lines}}
+            <li title="{{name}}">
+              {{trunc name 25}}
+              <span class="pull-right">
+                <a href="/search/results/lines/{{id}}/plot" class="road btn btn-xs btn-default">
+                  <i class="fa fa-road"></i> Ver
+                </a>
+              </span>
+            </li>
+            {{/each}}
+          </ul>
+        </div>
+      {{else}}
+        <div class="alert alert-info">
+          <p class="text-center"><i class="fa fa-warning fa-5x"></i></p>
+          <p class="text-center">
+            No hubo resultados
+          </p>
         </div>
       {{/if}}
     </script>
@@ -164,6 +224,8 @@
     <script src="/static/js/libs/handlebars-v1.1.2.js"></script>
     <script src="/static/js/libs/superagent.js"></script>
     <script src="/static/js/libs/page.js"></script>
+    <script src="/static/js/libs/select2.min.js"></script>
+    <script src="/static/js/libs/select2_locale_es.js"></script>
     <script src="/static/js/application.js"></script>
   </body>
 </html>

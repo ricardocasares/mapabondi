@@ -8,8 +8,8 @@
     , $searchForm = $('.form-sidebar')
     , $formReset = $('.formReset')
     , $searchResults = $('.results')
-    , startGeo = document.getElementById("startGeo")
-    , endGeo = document.getElementById("endGeo")
+    , $startGeo = $('#startGeo')
+    , $endGeo = $('#endGeo')
     , $start = $('#start')
     , $end = $('#end')
     , startAuto = new google.maps.places.Autocomplete(startGeo)
@@ -19,6 +19,8 @@
     , line = []
     , lines = []
     , map
+    , location_service = new google.maps.places.AutocompleteService()
+    , geocode_service = new google.maps.Geocoder()
     , request = superagent
     , endpoints = {
         transports: "/api/transports",
@@ -32,7 +34,43 @@
         zoom: 15,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         disableDefaultUI: true
+      }
+    , sel2Options = {
+        placeholder: "Buscar una dirección",
+        width: "100%",
+        minimumInputLength: 3,
+        query: function(options) {
+          location_service.getPlacePredictions({input: options.term, options: { location: new google.maps.LatLng(-31.53714,-68.525462), radius: 5000, types: ['geocode']}}, function(predictions, status) {
+            var results = {more: false};
+            if (status != google.maps.places.PlacesServiceStatus.OK) {
+              results.results = [];
+            } else {
+              results.results = predictions;
+              results.results = $.map(predictions, function(obj) {
+                return {'id': obj.description, 'text': obj.description, gid: obj.id};
+              });
+            }
+            options.callback(results);
+          });
+        },
+        initSelection: function(element, callback) {
+          var val = $(element).val();
+          if (val) {
+            callback({id: val, text:val});
+          }
+        }
       };
+
+  $(startGeo).select2(sel2Options).change(function(val) { autoChanged(val,startMarker,$start)});
+  $(endGeo).select2(sel2Options).change(function(val) { autoChanged(val,endMarker,$end)});
+
+  $searchForm.submit(function(e){
+    e.preventDefault();
+    var start = btoa($start.val() || false);
+    var end = btoa($end.val() || false);
+    console.log(start,end);
+    page('/search/from/' + start + '/to/' + end);
+  })
 
   // MAP RELATED FUNCTIONS
 
@@ -42,29 +80,22 @@
   }
 
   // autocomplete change handler
-  var autoChanged = function (autocomplete,marker,hidden) {
-    marker.setVisible(false);
-    var place = autocomplete.getPlace();
-    
-    if (!place.geometry) {
-      return;
-    }
+  var autoChanged = function (val,marker,hidden) {
+    geocode_service.geocode({address: val.val}, function(results, status) {
+        console.debug(results);
+        if (status == google.maps.GeocoderStatus.OK) {
+          var location = results[0].geometry.location;
+          
+          updateHidden(hidden,location);    
+          map.setCenter(location);
+          map.setZoom(17); 
 
-    updateHidden(hidden,place.geometry.location);
-    
-
-    // if the place has a geometry, then present it on a map.
-    if (place.geometry.viewport) {
-      map.fitBounds(place.geometry.viewport);
-    } else {
-      map.setCenter(place.geometry.location);
-      map.setZoom(17); 
-    }
-
-    marker.setDraggable(true);
-    marker.setMap(map);
-    marker.setPosition(place.geometry.location);
-    marker.setVisible(true);
+          marker.setDraggable(true);
+          marker.setMap(map);
+          marker.setPosition(location);
+          marker.setVisible(true);
+        }
+      });
   }
 
   // updates hidden inputs for coordinates
@@ -98,14 +129,6 @@
 
   // EVENT LISTENERS
 
-  // start input autocomplete
-  google.maps.event.addListener(startAuto, 'place_changed', function(){
-    autoChanged(startAuto,startMarker,$start);
-  });
-  // end input autocomplete
-  google.maps.event.addListener(endAuto, 'place_changed', function(){
-    autoChanged(endAuto,endMarker,$end);
-  });
   // start marker drag end
   google.maps.event.addListener(startMarker, 'dragend', function() {
     updateHidden($start,startMarker.getPosition());
@@ -182,19 +205,7 @@
       request
         .get(routes)
         .end(function(res){
-          clearOverlays();
-          $.each(res.body.routes, function(index,route) {
-            line.push(new google.maps.LatLng(route.lat,route.lng));
-          });
-
-          lines.push(new google.maps.Polyline({
-            map: map,
-            path: line,
-            strokeColor: "#a43796",
-            strokeOpacity: 1.0,
-            strokeWeight: 4
-          }));
-          zoomToObject(lines[lines.length-1]);
+          draw(res.body.routes);
         });
 
       request
@@ -205,9 +216,49 @@
     }
   }
 
+  var draw = function(points) {
+    clearOverlays();
+    $.each(points, function(index,route) {
+      line.push(new google.maps.LatLng(route.lat,route.lng));
+    });
+
+    lines.push(new google.maps.Polyline({
+      map: map,
+      path: line,
+      strokeColor: "#a43796",
+      strokeOpacity: 1.0,
+      strokeWeight: 4
+    }));
+    zoomToObject(lines[lines.length-1]);
+  }
+
   var search = function(ctx,next) {
     $('.transports').hide();
     $('.form-sidebar').show();
+  }
+
+  var fromTo = function(ctx,next) {
+    var from = atob(ctx.params.from);
+    var to = atob(ctx.params.to);
+    request
+      .get('/api/find')
+      .query({
+        start: from,
+        end: to
+      })
+      .end(function(res){
+        render('results-tpl','.transports',res.body);
+      });
+    next();
+  }
+
+  var searchResults = function(ctx,next) {
+    var routes = endpoints.routes.replace(':id',ctx.params.id);
+    request
+      .get(routes)
+      .end(function(res){
+        draw(res.body.routes);
+      });
   }
 
   // renders a template in the outlet
@@ -228,6 +279,9 @@
   page('/transports', transports.all, transports.index);
   page('/transports/:id/lines', transports.one, transports.show);
   page('/transports/:tid/lines/:lid/plot', transports.plot);
+  page('/search', search);
+  page('/search/from/:from/to/:to', fromTo, search);
+  page('/search/results/lines/:id/plot', searchResults);
   // init
   page();
 

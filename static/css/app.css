@@ -109,21 +109,11 @@ html, body {
 	margin-bottom:10px;
 }
 
-.results {
-	display:none;
-	padding: 10px 20px;
-	height: auto;
-	max-height:250px;
-	overflow-y: auto;
-	background: #FFF;
-	text-indent: 0;
-	border-bottom: 1px solid #DDD;
-}
-
 .transports {
 	display:none;
 	padding: 5px;
 	height: 350px;
+	max-height: 200px;
 	overflow-y: scroll;
 	text-indent: 0;
 	background: #F9F9F9;

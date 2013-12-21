@@ -10,22 +10,25 @@
 
     <title>Mapabondi</title>
 
-    <!-- Bootstrap core CSS -->
+    <!-- css libraries -->
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/font-awesome.min.css" rel="stylesheet">
     <link href="/static/css/select2.css" rel="stylesheet">
     <link href="/static/css/select2-bootstrap.css" rel="stylesheet">
 
-    <!-- Add custom CSS here -->
+    <!-- add custom css here -->
     <link href="/static/css/app.css" rel="stylesheet">
 
   </head>
 
   <body>
+    <!-- wrapper -->
     <div id="wrapper">
       
-      <!-- Sidebar -->
+      <!-- sidebar -->
       <div id="sidebar-wrapper">
+
+        <!-- main nav -->
         <ul class="sidebar-nav">
           <li class="sidebar-brand">
           	<a href="/">
@@ -38,18 +41,22 @@
           	</a>
           </li>
         </ul>
+        <!-- / main nav -->
         
-        <!-- Transports -->
+        <!-- transports -->
         <div class="transports"></div>
+        <!-- / transports -->
 
+        <!-- form nav -->
         <ul class="sidebar-nav">
           <li>
             <a class="searchToggle" href="/search">
               <i class="fa fa-search"></i> Buscar recorrido
             </a>
         </ul>
+        <!-- / form nav -->
 
-        <!-- Search form -->
+        <!-- search form -->
         <form class="form-sidebar">
           <div class="form-group">
             <label for="start">
@@ -72,11 +79,9 @@
             <i class="fa fa-trash-o"></i> Reiniciar
           </a>
         </form>
+        <!-- / search form -->
 
-        <!-- Search results -->
-        <div class="results">
-
-        </div>
+        <!-- footer -->
         <div id="footer">
           <p>
             <span class="mapabondi">
@@ -85,9 +90,11 @@
             &copy; <?php echo date('Y') ?> <a href="http://betamonster.com.ar/">Betamonster</a> 
           </p>
         </div>
+        <!-- /footer -->
       </div>
+      <!-- /sidebar -->
           
-      <!-- Page content -->
+      <!-- page content -->
       <div id="page-content-wrapper">
       	<a id="menu-toggle" href="#" class="btn btn-default"><i class="fa fa-bars"></i></a>
       	<div id="map_canvas">
@@ -101,8 +108,10 @@
           </div>
         </div>
       </div>
+      <!-- / page content -->
       
     </div>
+    <!-- / wrapper -->
 
     <script id="lines-tpl" type="text/x-handlebars-template">
       {{#if lines}}
@@ -158,35 +167,6 @@
             No hubo resultados
           </p>
         </div>
-      {{/if}}
-    </script>
-
-    <script id="transport-tpl" type="text/x-handlebars-template">
-      {{#if transports}}
-        <ul class="transports-list media-list">
-          <li class="media">
-            <img class="media-object pull-left" src="{{image}}" />
-            <div class="media-body">
-              <h5 class="media-heading">{{name}}</h5>
-              <ul class="fa-ul transport-info">
-                {{#if address}}<li><i class="fa-li fa fa-home"></i> {{address}}</li>{{/if}}
-                {{#if phone}}<li><i class="fa-li fa fa-phone"></i> {{phone}}</li>{{/if}}
-                {{#if url}}<li><i class="fa-li fa fa-globe"></i> <a href="{{url}}">Ver sitio web</a></li>{{/if}}
-              </ul>
-              <a href="/transports/{{id}}/lines" class="getTransportLines btn btn-xs btn-default">
-                Ver líneas
-              </a>
-            </div>
-            <div class="result-list lines-{{id}}"></div>
-          </li>       
-        </ul>
-      {{else}}
-          <div class="alert alert-info">
-            <p class="text-center"><i class="fa fa-warning fa-5x"></i></p>
-            <p class="text-center">
-              No hubo resultados
-            </p>
-          </div>
       {{/if}}
     </script>
 

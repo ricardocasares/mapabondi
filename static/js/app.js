@@ -68,7 +68,7 @@ function initialize() {
   };
   
   // instantiate map
-  map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);;
+  map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
 
   google.maps.event.addListener(startAuto, 'place_changed', function(){
     autoChanged(startAuto,startMarker,$start);

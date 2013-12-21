@@ -31,7 +31,7 @@
           	</a>
           </li>
           <li>
-          	<a class="transportsToggle" href="#">
+          	<a class="transportsToggle" href="/transports">
           		<i class="fa fa-building-o"></i> Empresas de transporte
           	</a>
           </li>
@@ -42,7 +42,7 @@
 
         <ul class="sidebar-nav">
           <li>
-            <a class="searchToggle" href="#">
+            <a class="searchToggle" href="/search">
               <i class="fa fa-search"></i> Buscar recorrido
             </a>
         </ul>
@@ -142,8 +142,8 @@
         {{/each}}
         </ul>
       {{else}}
-        <div class="alert alert-warning">
-          No existen transportes todavía
+          <div class="alert alert-warning">
+            No existen transportes todavía
         </div>
       {{/if}}
     </script>
@@ -175,8 +175,9 @@
     <script type="text/javascript"
       src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCNOS0iZYdnhM-3pbOwV-z8f-3NfRG2zM0&sensor=true&libraries=places">
     </script>
-    <script src="static/js/libs/bootstrap.min.js"></script>
     <script src="static/js/libs/handlebars-v1.1.2.js"></script>
-    <script src="static/js/app.js"></script>
+    <script src="static/js/libs/superagent.js"></script>
+    <script src="static/js/libs/page.js"></script>
+    <script src="static/js/application.js"></script>
   </body>
 </html>

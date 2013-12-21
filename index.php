@@ -46,11 +46,6 @@ $app->configureMode('development', function () use ($app) {
  * ROUTES
  **/
 
-// main route
-$app->get('/', function () use ($app) {
-	$app->render('layout.php',array());
-});
-
 // REST API routes
 $app->group('/api', function() use ($app) {
 	// get all transports
@@ -73,6 +68,11 @@ $app->group('/api', function() use ($app) {
 	$app->get('/find', function() use ($app) {
 		findLinesByCoordinates($app);
 	});
+});
+
+// catch all route
+$app->get('.+', function () use ($app) {
+	$app->render('layout.php',array());
 });
 
 // get all transports

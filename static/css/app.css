@@ -112,7 +112,7 @@ html, body {
 .transports {
 	display:none;
 	padding: 5px;
-	height: 350px;
+	height: auto;
 	max-height: 200px;
 	overflow-y: scroll;
 	text-indent: 0;

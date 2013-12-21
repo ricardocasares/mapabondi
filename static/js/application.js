@@ -235,6 +235,7 @@
   var search = function(ctx,next) {
     $('.transports').hide();
     $('.form-sidebar').show();
+    clearOverlays();
   }
 
   var fromTo = function(ctx,next) {

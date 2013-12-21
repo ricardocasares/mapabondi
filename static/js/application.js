@@ -128,7 +128,8 @@
 
   // index route
   var index = function (ctx,next) {
-    
+    $('.transports').hide();
+    $('.form-sidebar').hide();
   }
 
   // transports routes
@@ -136,36 +137,38 @@
     
     load: function(ctx,next) {
       if(ctx.state.transports) {
-        console.log(ctx.state.transports);
+        next();
       }
       else {
         request
           .get(endpoints.transports)
           .end(function(res){
-            ctx.transports = res.body.transports;
+            ctx.state.transports = res.body;
+            ctx.save();
             next();
           });
       }
     },
 
     index: function (ctx,next) {
-      console.log(ctx.state);
-      render('transports-tpl','.transports',ctx.transports);
+      $('.form-sidebar').hide();
+      render('transports-tpl','.transports',ctx.state.transports);
     },
 
     show: function(ctx,next) {
-      
+      render('transports-tpl','.transports',ctx.state.transports);
     }
   }
 
   var search = function(ctx,next) {
-    
+    $('.transports').hide();
+    $('.form-sidebar').show();
   }
 
   // renders a template in the outlet
   var render = function(tpl,outlet,data) {
     var src = $('#' + tpl).html();
-    var tpl = Handlebars.compile(src);
+    var tpl = Handlebars.compile(src)(data);
     $(outlet).html(tpl).show();
   }
 

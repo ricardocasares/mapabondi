@@ -47,6 +47,7 @@ $formReset.click(function(e){
   clearOverlays();
 });
 $searchForm.submit(function(e){
+  clearOverlays();
   $.getJSON(endpoints.find,$(this).serialize()).done(function(data){
     var html = render('#results-tpl',data,'.results');
     html.slideDown('fast').find('.btn').click(function(e){
@@ -105,7 +106,7 @@ function initialize() {
   google.maps.event.addListener(startMarker, 'dragend', function() {
     updateHidden($start,startMarker.getPosition());
   });
-  
+
   google.maps.event.addListener(endMarker, 'dragend', function() {
     updateHidden($end,endMarker.getPosition());
   });

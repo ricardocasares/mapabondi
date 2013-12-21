@@ -145,7 +145,7 @@ function findLinesByCoordinates($app) {
 	$end   = $app->request->params('end');
 	$app->response->headers->set('Content-Type', 'application/json');
 	try {
-		$lines = getLinesMatching($start,$end,$app);
+		$lines = haversine($start,$end,$app);
 
 		echo '{"lines": ' . json_encode($lines,JSON_UNESCAPED_UNICODE) . '}';
 	} catch(PDOException $e) {
@@ -165,23 +165,31 @@ function getLinesMatching($start,$end,$app)
 }
 
 // perform sql version of haversine formula
-function haversine($point,$app)
+function haversine($start,$end,$app)
 {
-	$point = explode(',',$point);
+	$start = explode(',', $start);
+	$end = explode(',', $end);
 
-	$sql = "SELECT `lines`.name, `lines`.id FROM `lines`
+	$sql = "SELECT DISTINCT(`lines`.id),`lines`.name FROM (SELECT line_id, lat, lng,
+					(6378.10 * acos(cos(radians(:latStart)) * cos(radians( lat ))	* cos(radians(lng) - radians(:lngStart)) + sin(radians(:latStart))
+					* sin(radians(lat)))) AS distance
+					FROM routes
+					HAVING distance < 0.5
+					ORDER BY distance ASC) AS origin 
 				JOIN (SELECT line_id, lat, lng,
-				(6378.10 * acos(cos(radians(:lat)) * cos(radians( lat ))	* cos(radians(lng) - radians(:lng)) + sin(radians(:lat))
-				* sin(radians(lat)))) AS distance
-				FROM routes
-				HAVING distance < 0.2 ORDER BY distance ASC) AS matches ON matches.line_id = `lines`.id
-				GROUP BY line_id
-				ORDER BY distance";
+					(6378.10 * acos(cos(radians(:latEnd)) * cos(radians( lat ))	* cos(radians(lng) - radians(:lngEnd)) + sin(radians(:latEnd))
+					* sin(radians(lat)))) AS distance
+					FROM routes
+					HAVING distance < 0.5
+					ORDER BY distance ASC) AS dst ON dst.line_id = origin.line_id
+				JOIN `lines` ON `lines`.id = `dst`.line_id";
 
 	$db = getConnection($app);
 	$sth = $db->prepare($sql);
-	$sth->bindParam('lat',$point[0]);
-	$sth->bindParam('lng',$point[1]);
+	$sth->bindParam('latStart',$start[0]);
+	$sth->bindParam('lngStart',$start[1]);
+	$sth->bindParam('latEnd',$end[0]);
+	$sth->bindParam('lngEnd',$end[1]);
 	$sth->execute();
 	$lines = $sth->fetchAll(PDO::FETCH_ASSOC);
 	return $lines;

@@ -11,11 +11,11 @@
     <title>Mapabondi</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="static/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/font-awesome.min.css" rel="stylesheet">
 
     <!-- Add custom CSS here -->
-    <link href="static/css/app.css" rel="stylesheet">
+    <link href="/static/css/app.css" rel="stylesheet">
 
   </head>
 
@@ -93,16 +93,15 @@
       
     </div>
 
-    <script id="results-tpl" type="text/x-handlebars-template">
+    <script id="lines-tpl" type="text/x-handlebars-template">
       {{#if lines}}
-        <div class="result-list">
+        <div class="result-list media">
           <ul class="list-unstyled">
-            <li class="dropdown-header"><i class="fa fa-search"></i> Resultados de la búsqueda</li>
             {{#each lines}}
             <li title="{{name}}">
               {{trunc name 25}}
               <span class="pull-right">
-                <a data-line-id="{{id}}" class="road btn btn-xs btn-default">
+                <a href="/transports/{{transport_id}}/lines/{{id}}/plot" class="road btn btn-xs btn-default">
                   <i class="fa fa-road"></i> Ver recorrido
                 </a>
               </span>
@@ -133,7 +132,7 @@
                 {{#if phone}}<li><i class="fa-li fa fa-phone"></i> {{phone}}</li>{{/if}}
                 {{#if url}}<li><i class="fa-li fa fa-globe"></i> <a href="{{url}}">Ver sitio web</a></li>{{/if}}
               </ul>
-              <a data-transport-id="{{id}}" class="getTransportLines btn btn-xs btn-default">
+              <a href="/transports/{{id}}/lines" class="getTransportLines btn btn-xs btn-default">
                 Ver líneas
               </a>
             </div>
@@ -147,37 +146,15 @@
         </div>
       {{/if}}
     </script>
-
-    <script id="lines-tpl" type="text/x-handlebars-template">
-      {{#if lines}}
-        <ul class="list-unstyled">
-        <li class="dropdown-header">Lineas</li>
-        {{#each lines}}
-          <li title="{{name}}">
-            {{trunc name 25}}
-            <span class="pull-right">
-              <a data-line-id="{{id}}" class="road btn btn-xs btn-default">
-                <i class="fa fa-road"></i> Ver recorrido
-              </a>
-            </span>
-          </li>
-        {{/each}}
-        </ul>
-      {{else}}
-        <div class="alert alert-warning">
-          No existen líneas todavía para esta empresa
-        </div>
-      {{/if}}
-    </script>
 	
     <!-- JavaScript -->
-    <script src="static/js/libs/jquery.min.js"></script>
+    <script src="/static/js/libs/jquery.min.js"></script>
     <script type="text/javascript"
       src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCNOS0iZYdnhM-3pbOwV-z8f-3NfRG2zM0&sensor=true&libraries=places">
     </script>
-    <script src="static/js/libs/handlebars-v1.1.2.js"></script>
-    <script src="static/js/libs/superagent.js"></script>
-    <script src="static/js/libs/page.js"></script>
-    <script src="static/js/application.js"></script>
+    <script src="/static/js/libs/handlebars-v1.1.2.js"></script>
+    <script src="/static/js/libs/superagent.js"></script>
+    <script src="/static/js/libs/page.js"></script>
+    <script src="/static/js/application.js"></script>
   </body>
 </html>

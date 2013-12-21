@@ -135,7 +135,7 @@
   // transports routes
   var transports = {
     
-    load: function(ctx,next) {
+    all: function(ctx,next) {
       if(ctx.state.transports) {
         next();
       }
@@ -150,13 +150,58 @@
       }
     },
 
+    one: function(ctx,next) {
+      if(ctx.state.transport) {
+        next();
+      }
+      else {
+        var url = endpoints.lines.replace(':id',ctx.params.id);
+        request
+          .get(url)
+          .end(function(res){
+            ctx.state.transport = res.body;
+            ctx.save();
+            next();
+          });
+      }
+    },
+
     index: function (ctx,next) {
       $('.form-sidebar').hide();
       render('transports-tpl','.transports',ctx.state.transports);
     },
 
     show: function(ctx,next) {
-      render('transports-tpl','.transports',ctx.state.transports);
+      render('lines-tpl','.transports',ctx.state.transport);
+    },
+
+    plot: function(ctx,next) {
+      var routes = endpoints.routes.replace(':id',ctx.params.lid);
+      var transport  = endpoints.lines.replace(':id',ctx.params.tid);
+
+      request
+        .get(routes)
+        .end(function(res){
+          clearOverlays();
+          $.each(res.body.routes, function(index,route) {
+            line.push(new google.maps.LatLng(route.lat,route.lng));
+          });
+
+          lines.push(new google.maps.Polyline({
+            map: map,
+            path: line,
+            strokeColor: "#a43796",
+            strokeOpacity: 1.0,
+            strokeWeight: 4
+          }));
+          zoomToObject(lines[lines.length-1]);
+        });
+
+      request
+        .get(transport)
+        .end(function(res){
+          render('lines-tpl','.transports',res.body);
+        });
     }
   }
 
@@ -180,8 +225,9 @@
   // index
   page('/', index);
   // show transports
-  page('/transports', transports.load, transports.index);
-  page('/search', search);
+  page('/transports', transports.all, transports.index);
+  page('/transports/:id/lines', transports.one, transports.show);
+  page('/transports/:tid/lines/:lid/plot', transports.plot);
   // init
   page();
 

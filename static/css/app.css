@@ -82,7 +82,7 @@ html, body {
 	margin-bottom:0;
 }
 
-li.media {
+.media {
 	border: 1px solid #DDD;
 	background: #FFF;
 	padding: 10px;

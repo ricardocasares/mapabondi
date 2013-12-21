@@ -61,9 +61,17 @@
         }
       };
 
+  // handle sidebar hiding
+  $menuToggle.click(function(e) {
+    e.preventDefault();
+    $wrapper.toggleClass("active");
+  });
+
+  // handle geolocation autocomplete
   $(startGeo).select2(sel2Options).change(function(val) { autoChanged(val,startMarker,$start)});
   $(endGeo).select2(sel2Options).change(function(val) { autoChanged(val,endMarker,$end)});
 
+  // handle form submit
   $searchForm.submit(function(e){
     e.preventDefault();
     var start = btoa($start.val() || false);

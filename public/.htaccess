@@ -1,5 +1,5 @@
 RewriteEngine On
 RewriteBase /public/
 RewriteCond $1 !^(index\.php|static)
-RewriteRule ^(.*)$ index.php/$1 [L]
-AddDefaultCharset UTF-8
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.php [QSA,L]

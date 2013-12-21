@@ -11,8 +11,8 @@
     <title>Mapabondi</title>
 
     <!-- css libraries -->
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/select2.css" rel="stylesheet">
     <link href="/static/css/select2-bootstrap.css" rel="stylesheet">
 

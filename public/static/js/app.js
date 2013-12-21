@@ -85,7 +85,8 @@ function initialize() {
       return;
     }
 
-    hidden.val(place.geometry.location.nb + ',' + place.geometry.location.ob);
+    updateHidden(hidden,place.geometry.location);
+    
 
     // if the place has a geometry, then present it on a map.
     if (place.geometry.viewport) {
@@ -95,10 +96,19 @@ function initialize() {
       map.setZoom(17); 
     }
 
+    marker.setDraggable(true);
     marker.setMap(map);
     marker.setPosition(place.geometry.location);
-    marker.setVisible(true);    
+    marker.setVisible(true);
   }
+
+  google.maps.event.addListener(startMarker, 'dragend', function() {
+    updateHidden($start,startMarker.getPosition());
+  });
+  
+  google.maps.event.addListener(endMarker, 'dragend', function() {
+    updateHidden($end,endMarker.getPosition());
+  });
 }
 
 // render handlebars templates
@@ -158,6 +168,10 @@ function getRoutes(e,el){
     }));
     zoomToObject(lines[lines.length-1]);
   });
+}
+
+function updateHidden(hidden,coords) {
+  hidden.val([coords.lat(),coords.lng()].join(','));
 }
 
 // clears map overlays

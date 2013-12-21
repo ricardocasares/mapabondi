@@ -19,8 +19,8 @@
     , line = []
     , lines = []
     , map
-    , location_service = new google.maps.places.AutocompleteService()
-    , geocode_service = new google.maps.Geocoder()
+    , locationService = new google.maps.places.AutocompleteService()
+    , geocodeService = new google.maps.Geocoder()
     , request = superagent
     , endpoints = {
         transports: "/api/transports",
@@ -40,7 +40,7 @@
         width: "100%",
         minimumInputLength: 3,
         query: function(options) {
-          location_service.getPlacePredictions({input: options.term, options: { location: new google.maps.LatLng(-31.53714,-68.525462), radius: 5000, types: ['geocode']}}, function(predictions, status) {
+          locationService.getPlacePredictions({input: options.term, options: { location: new google.maps.LatLng(-31.53714,-68.525462), radius: 5000, types: ['geocode']}}, function(predictions, status) {
             var results = {more: false};
             if (status != google.maps.places.PlacesServiceStatus.OK) {
               results.results = [];
@@ -68,7 +68,6 @@
     e.preventDefault();
     var start = btoa($start.val() || false);
     var end = btoa($end.val() || false);
-    console.log(start,end);
     page('/search/from/' + start + '/to/' + end);
   })
 
@@ -81,8 +80,7 @@
 
   // autocomplete change handler
   var autoChanged = function (val,marker,hidden) {
-    geocode_service.geocode({address: val.val}, function(results, status) {
-        console.debug(results);
+    geocodeService.geocode({address: val.val}, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
           var location = results[0].geometry.location;
           

@@ -1,4 +1,6 @@
 RewriteEngine on
 RewriteBase /
 RewriteCond %{REQUEST_URI} !public/
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule (.*) /public/$1 [L]
+RewriteRule ^(.*)$ /public/index.php [QSA,L]

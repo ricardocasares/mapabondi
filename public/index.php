@@ -20,13 +20,15 @@ $app = new \Slim\Slim(array(
 
 // set production configuration
 $app->configureMode('production', function () use ($app) {
+		$services_json = json_decode(getenv("VCAP_SERVICES"),true);
+		$mysql = $services_json["mysql-5.1"][0]["credentials"];
     $app->config(array(
         'log.enable' => true,
         'debug' => false,
-        'dbhost' => $_SERVER["DB1_HOST"],
-        'dbname' => $_SERVER["DB1_NAME"],
-        'dbuser' => $_SERVER["DB1_USER"],
-        'dbpass' => $_SERVER["DB1_PASS"]
+        'dbhost' => $mysql['hostname'],
+        'dbname' => $mysql['name'],
+        'dbuser' => $mysql['username'],
+        'dbpass' => $mysql['password']
     ));
 });
 

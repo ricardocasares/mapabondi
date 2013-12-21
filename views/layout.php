@@ -88,7 +88,16 @@
       <!-- Page content -->
       <div id="page-content-wrapper">
       	<a id="menu-toggle" href="#" class="btn btn-default"><i class="fa fa-bars"></i></a>
-      	<div id="map_canvas"></div>
+      	<div id="map_canvas">
+          <div class="map-loading">
+            <p class="text-center">
+              <i class="fa fa-clock-o fa-5x"></i>
+            </p>
+            <p class="text-center">
+              cargando mapa
+            </p>
+          </div>
+        </div>
       </div>
       
     </div>

@@ -196,7 +196,7 @@
       {{/if}}
     </script>
 	
-    <!-- JavaScript -->
+    <!-- js libraries -->
     <script src="/static/js/libs/jquery.min.js"></script>
     <script type="text/javascript"
       src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCNOS0iZYdnhM-3pbOwV-z8f-3NfRG2zM0&sensor=true&libraries=places">
@@ -206,6 +206,8 @@
     <script src="/static/js/libs/page.js"></script>
     <script src="/static/js/libs/select2.min.js"></script>
     <script src="/static/js/libs/select2_locale_es.js"></script>
+
+    <!-- application -->
     <script src="/static/js/application.js"></script>
   </body>
 </html>

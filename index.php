@@ -6,7 +6,7 @@
  **/
 
 // require composer autoload
-require '../vendor/autoload.php';
+require 'vendor/autoload.php';
 
 /**
  * CONFIGURATION
@@ -14,7 +14,7 @@ require '../vendor/autoload.php';
 
 // slim instance
 $app = new \Slim\Slim(array(
-	'templates.path' => '../views',
+	'templates.path' => 'views',
 	'mode' => isset($_SERVER['SLIM_MODE']) ? $_SERVER['SLIM_MODE'] : 'development'
 ));
 
@@ -78,7 +78,7 @@ $app->group('/api', function() use ($app) {
 // get all transports
 function getTransports($app) {
 	$app->response->headers->set('Content-Type', 'application/json');
-	$sql = "SELECT * FROM transports";
+	$sql = "SELECT * FROM transports  ORDER BY name";
 	try {
 		$db = getConnection($app);
 		$sth = $db->query($sql);
@@ -110,7 +110,7 @@ function getTransportById($transport, $app) {
 // get all transport lines
 function getTransportLines($transport, $app) {
 	$app->response->headers->set('Content-Type', 'application/json');
-	$sql = "SELECT * FROM `lines` WHERE transport_id = :transport";
+	$sql = "SELECT * FROM `lines` WHERE transport_id = :transport ORDER BY name";
 	try {
 		$db = getConnection($app);
 		$sth = $db->prepare($sql);
@@ -143,58 +143,38 @@ function getLineRoutes($line, $app) {
 
 // finds lines by origin/destination coordinates
 function findLinesByCoordinates($app) {
-	$start = $app->request->params('start');
-	$end   = $app->request->params('end');
+	$start = explode(',', $app->request->get('start'));
+	$end   = explode(',', $app->request->get('end'));
 	$app->response->headers->set('Content-Type', 'application/json');
 	try {
-		$lines = haversine($start,$end,$app);
 
-		echo '{"lines": ' . json_encode($lines,JSON_UNESCAPED_UNICODE) . '}';
+		$sql = "SELECT DISTINCT(`lines`.id),`lines`.name FROM (SELECT line_id, lat, lng,
+						(6378.10 * acos(cos(radians(:latStart)) * cos(radians( lat ))	* cos(radians(lng) - radians(:lngStart)) + sin(radians(:latStart))
+						* sin(radians(lat)))) AS distance
+						FROM routes
+						HAVING distance < 0.5
+						ORDER BY distance ASC) AS origin 
+					JOIN (SELECT line_id, lat, lng,
+						(6378.10 * acos(cos(radians(:latEnd)) * cos(radians( lat ))	* cos(radians(lng) - radians(:lngEnd)) + sin(radians(:latEnd))
+						* sin(radians(lat)))) AS distance
+						FROM routes
+						HAVING distance < 0.5
+						ORDER BY distance ASC) AS dst ON dst.line_id = origin.line_id
+					JOIN `lines` ON `lines`.id = `dst`.line_id";
+
+		$db = getConnection($app);
+		$sth = $db->prepare($sql);
+		$sth->bindParam('latStart',$start[0]);
+		$sth->bindParam('lngStart',$start[1]);
+		$sth->bindParam('latEnd',$end[0]);
+		$sth->bindParam('lngEnd',$end[1]);
+		$sth->execute();
+		$lines = $sth->fetchAll(PDO::FETCH_ASSOC);
+
+		echo '{"lines": ' . json_encode($lines) . '}';
 	} catch(PDOException $e) {
 		echo '{"error":{"msg":'. $e->getMessage() .'}}';
 	}
-}
-
-// compare lines in both ends and return unique array
-function getLinesMatching($start,$end,$app)
-{
-	$start = haversine($start,$app);
-	$end = haversine($end,$app);
-
-	if(!$start OR !$end) return FALSE;
-
-	return array_intersect_key($end,$start);
-}
-
-// perform sql version of haversine formula
-function haversine($start,$end,$app)
-{
-	$start = explode(',', $start);
-	$end = explode(',', $end);
-
-	$sql = "SELECT DISTINCT(`lines`.id),`lines`.name FROM (SELECT line_id, lat, lng,
-					(6378.10 * acos(cos(radians(:latStart)) * cos(radians( lat ))	* cos(radians(lng) - radians(:lngStart)) + sin(radians(:latStart))
-					* sin(radians(lat)))) AS distance
-					FROM routes
-					HAVING distance < 0.5
-					ORDER BY distance ASC) AS origin 
-				JOIN (SELECT line_id, lat, lng,
-					(6378.10 * acos(cos(radians(:latEnd)) * cos(radians( lat ))	* cos(radians(lng) - radians(:lngEnd)) + sin(radians(:latEnd))
-					* sin(radians(lat)))) AS distance
-					FROM routes
-					HAVING distance < 0.5
-					ORDER BY distance ASC) AS dst ON dst.line_id = origin.line_id
-				JOIN `lines` ON `lines`.id = `dst`.line_id";
-
-	$db = getConnection($app);
-	$sth = $db->prepare($sql);
-	$sth->bindParam('latStart',$start[0]);
-	$sth->bindParam('lngStart',$start[1]);
-	$sth->bindParam('latEnd',$end[0]);
-	$sth->bindParam('lngEnd',$end[1]);
-	$sth->execute();
-	$lines = $sth->fetchAll(PDO::FETCH_ASSOC);
-	return $lines;
 }
 
 // hey ho, let's go!

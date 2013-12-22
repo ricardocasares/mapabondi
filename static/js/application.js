@@ -12,6 +12,7 @@
     , $endGeo = $('#endGeo')
     , $start = $('#start')
     , $end = $('#end')
+    , map_div = document.getElementById("map_canvas")
     , startAuto = new google.maps.places.Autocomplete(startGeo)
     , endAuto = new google.maps.places.Autocomplete(endGeo)
     , startMarker = new google.maps.Marker()
@@ -19,10 +20,13 @@
     , line = []
     , lines = []
     , map
+    , bounds
     , locationService = new google.maps.places.AutocompleteService()
     , geocodeService = new google.maps.Geocoder()
-    , request = superagent
-    , endpoints = {
+    , request = superagent;
+  
+  // configuration options
+  var endpoints = {
         transports: "/api/transports",
         transport: "/api/transports/:id",
         lines: "/api/transports/:id/lines",
@@ -40,7 +44,14 @@
         width: "100%",
         minimumInputLength: 3,
         query: function(options) {
-          locationService.getPlacePredictions({input: options.term, options: { location: new google.maps.LatLng(-31.53714,-68.525462), radius: 5000, types: ['geocode']}}, function(predictions, status) {
+          locationService.getPlacePredictions({
+            input: options.term,
+            radius: 200,
+            location: mapOptions.center,
+            types: ['geocode']
+          },
+          // callback
+          function(predictions, status) {
             var results = {more: false};
             if (status != google.maps.places.PlacesServiceStatus.OK) {
               results.results = [];
@@ -83,7 +94,12 @@
 
   // instatiates the map
   var initMap = function() {
-    map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions);
+    map = new google.maps.Map(map_div, mapOptions);
+
+    // on map idle get map bounds
+    google.maps.event.addListener(map, 'idle', function() {
+      bounds = map.getBounds();
+    });
   }
 
   // autocomplete change handler

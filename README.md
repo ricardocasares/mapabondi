@@ -20,3 +20,7 @@ Bus route search and browse app on top of Slim framework REST API.
 
 ## API docs
 Checkout the API documentation [here](https://github.com/ricardocasares/mapabondi/wiki/API-Documentation)
+
+## Roadmap
+
+* Currently I'm not checking for XSS or SQL injections.

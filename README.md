@@ -2,6 +2,7 @@ mapabondi
 =========
 
 Bus route search and browse app on top of Slim framework REST API.
+[Checkout the demo](http://mapabondi.eu01.aws.af.cm/)
 
 ## Requirements
 

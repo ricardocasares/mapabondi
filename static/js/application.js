@@ -87,7 +87,7 @@
     e.preventDefault();
     var start = btoa($start.val() || false);
     var end = btoa($end.val() || false);
-    page('/search/from/' + start + '/to/' + end);
+    page(['/search/from',start,'to',end].join('/'));
   })
 
   // MAP RELATED FUNCTIONS
@@ -146,6 +146,22 @@
           bounds.extend(points[n]);
       }
       map.fitBounds(bounds);
+  }
+
+  var draw = function(points) {
+    clearOverlays();
+    $.each(points, function(index,route) {
+      line.push(new google.maps.LatLng(route.lat,route.lng));
+    });
+
+    lines.push(new google.maps.Polyline({
+      map: map,
+      path: line,
+      strokeColor: "#a43796",
+      strokeOpacity: 1.0,
+      strokeWeight: 4
+    }));
+    zoomToObject(lines[lines.length-1]);
   }
 
 
@@ -237,22 +253,6 @@
           render('lines-tpl','.transports',res.body);
         });
     }
-  }
-
-  var draw = function(points) {
-    clearOverlays();
-    $.each(points, function(index,route) {
-      line.push(new google.maps.LatLng(route.lat,route.lng));
-    });
-
-    lines.push(new google.maps.Polyline({
-      map: map,
-      path: line,
-      strokeColor: "#a43796",
-      strokeOpacity: 1.0,
-      strokeWeight: 4
-    }));
-    zoomToObject(lines[lines.length-1]);
   }
 
   var search = function(ctx,next) {

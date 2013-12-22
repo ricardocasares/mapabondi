@@ -1,2 +1,5 @@
 vendor
 composer.lock
+Gruntfile.js
+node_modules
+package.json

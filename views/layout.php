@@ -11,13 +11,7 @@
     <title>Mapabondi</title>
 
     <!-- css libraries -->
-    <link href="/static/css/font-awesome.min.css" rel="stylesheet">
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/css/select2.css" rel="stylesheet">
-    <link href="/static/css/select2-bootstrap.css" rel="stylesheet">
-
-    <!-- add custom css here -->
-    <link href="/static/css/app.css" rel="stylesheet">
+    <link href="/static/css/application.min.css" rel="stylesheet">
 
   </head>
 
@@ -196,18 +190,12 @@
       {{/if}}
     </script>
 	
-    <!-- js libraries -->
-    <script src="/static/js/libs/jquery.min.js"></script>
+    <!-- google maps -->
     <script type="text/javascript"
       src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCNOS0iZYdnhM-3pbOwV-z8f-3NfRG2zM0&sensor=true&libraries=places">
     </script>
-    <script src="/static/js/libs/handlebars-v1.1.2.js"></script>
-    <script src="/static/js/libs/superagent.js"></script>
-    <script src="/static/js/libs/page.js"></script>
-    <script src="/static/js/libs/select2.min.js"></script>
-    <script src="/static/js/libs/select2_locale_es.js"></script>
 
     <!-- application -->
-    <script src="/static/js/application.js"></script>
+    <script src="/static/js/application.min.js"></script>
   </body>
 </html>

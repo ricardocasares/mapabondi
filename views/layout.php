@@ -81,7 +81,7 @@
             <span class="mapabondi">
               <i class="fa fa-map-marker"></i> mapabondi
             </span>
-            &copy; <?php echo date('Y') ?> <a href="http://betamonster.com.ar/">Betamonster</a> 
+            &copy; <?php echo date('Y') ?> <a href="http://betamonster.com.ar/">Betamonster</a> · <a href="https://github.com/ricardocasares/mapabondi">Source</a>
           </p>
         </div>
         <!-- /footer -->

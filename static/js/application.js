@@ -190,8 +190,8 @@
   // index route
   var index = function (ctx,next) {
     clearOverlays();
-    $('.transports').hide();
-    $('.form-sidebar').hide();
+    $transports.hide();
+    $searchForm.hide();
   }
 
   // transports routes
@@ -229,7 +229,7 @@
     },
 
     index: function (ctx,next) {
-      $('.form-sidebar').hide();
+      $searchForm.hide();
       render('transports-tpl','.transports',ctx.state.transports);
     },
 
@@ -256,8 +256,8 @@
   }
 
   var search = function(ctx,next) {
-    $('.transports').hide();
-    $('.form-sidebar').show();
+    $transports.hide();
+    $searchForm.show();
     clearOverlays();
   }
 

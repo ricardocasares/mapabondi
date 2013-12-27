@@ -108,10 +108,10 @@
     <!-- / wrapper -->
 
     <script id="lines-tpl" type="text/x-handlebars-template">
-      {{#if lines}}
+      {{#if this}}
         <div class="result-list media">
           <ul class="list-unstyled">
-            {{#each lines}}
+            {{#each this}}
             <li title="{{name}}">
               {{trunc name 25}}
               <span class="pull-right">
@@ -134,9 +134,9 @@
     </script>
 
     <script id="transports-tpl" type="text/x-handlebars-template">
-      {{#if transports}}
+      {{#if this}}
         <ul class="transports-list media-list">
-        {{#each transports}}
+        {{#each this}}
           <li class="media">
             <img class="media-object pull-left" src="{{image}}" />
             <div class="media-body">
@@ -165,10 +165,10 @@
     </script>
 
     <script id="results-tpl" type="text/x-handlebars-template">
-      {{#if lines}}
+      {{#if this}}
         <div class="result-list media">
           <ul class="list-unstyled">
-            {{#each lines}}
+            {{#each this}}
             <li title="{{name}}">
               {{trunc name 25}}
               <span class="pull-right">

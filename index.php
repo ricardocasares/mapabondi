@@ -84,9 +84,14 @@ function getTransports($app) {
 		$sth = $db->query($sql);
 		$transports = $sth->fetchAll(PDO::FETCH_OBJ);
 		$db = null;
-		echo '{"transports": ' . json_encode($transports) . '}';
+		if(!$transports)
+		{
+			$app->response->setStatus(404);
+			$transports = array('error' => array('msg' => 'Transports not found'));
+		}
+		echo json_encode($transports);
 	} catch(PDOException $e) {
-		echo '{"error":{"msg":'. $e->getMessage() .'}}';
+		echo json_encode(array('error' => array('msg' => $e->getMessage())));
 	}
 }
 
@@ -101,9 +106,14 @@ function getTransportById($transport, $app) {
 		$sth->execute();
 		$transport = $sth->fetchObject();
 		$db = null;
+		if(!$transport)
+		{
+			$app->response->setStatus(404);
+			$transport = array('error' => array('msg' => 'Transport not found'));
+		}
 		echo json_encode($transport);
 	} catch(PDOException $e) {
-		echo '{"error":{"msg":'. $e->getMessage() .'}}';
+		echo json_encode(array('error' => array('msg' => $e->getMessage())));
 	}
 }
 
@@ -118,9 +128,14 @@ function getTransportLines($transport, $app) {
 		$sth->execute();
 		$lines = $sth->fetchAll(PDO::FETCH_OBJ);
 		$db = null;
-		echo '{"lines": ' . json_encode($lines) . '}';
+		if(!$lines)
+		{
+			$app->response->setStatus(404);
+			$lines = array('error' => array('msg' => 'No lines found'));
+		}
+		echo json_encode($lines);
 	} catch(PDOException $e) {
-		echo '{"error":{"msg":'. $e->getMessage() .'}}';
+		echo json_encode(array('error' => array('msg' => $e->getMessage())));
 	}
 }
 
@@ -135,9 +150,14 @@ function getLineRoutes($line, $app) {
 		$sth->execute();
 		$routes = $sth->fetchAll(PDO::FETCH_OBJ);
 		$db = null;
-		echo '{"routes": ' . json_encode($routes) . '}';
+		if(!$routes)
+		{
+			$app->response->setStatus(404);
+			$routes = array('error' => array('msg' => 'Route not found'));
+		}
+		echo json_encode($routes);
 	} catch(PDOException $e) {
-		echo '{"error":{"msg":'. $e->getMessage() .'}}';
+		echo json_encode(array('error' => array('msg' => $e->getMessage())));
 	}
 }
 
@@ -171,9 +191,14 @@ function findLinesByCoordinates($app) {
 		$sth->execute();
 		$lines = $sth->fetchAll(PDO::FETCH_ASSOC);
 
-		echo '{"lines": ' . json_encode($lines) . '}';
+		if(!$lines)
+		{
+			$app->response->setStatus(404);
+			$lines = array('error' => array('msg' => 'Lines not found'));
+		}
+		echo json_encode($lines);
 	} catch(PDOException $e) {
-		echo '{"error":{"msg":'. $e->getMessage() .'}}';
+		echo json_encode(array('error' => array('msg' => $e->getMessage())));
 	}
 }
 

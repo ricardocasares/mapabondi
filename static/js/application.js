@@ -244,7 +244,7 @@
       request
         .get(routes)
         .end(function(res){
-          draw(res.body.routes);
+          draw(res.body);
         });
 
       request
@@ -281,7 +281,7 @@
     request
       .get(routes)
       .end(function(res){
-        draw(res.body.routes);
+        draw(res.body);
       });
   }
 

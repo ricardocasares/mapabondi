@@ -133,7 +133,7 @@ function getTransportLines($transport, $app) {
 		if(!$lines)
 		{
 			$app->response->setStatus(404);
-			$lines = array('error' => array('msg' => 'No lines found'));
+			$lines = array('error' => array('msg' => 'No se encontraron lineas para este transporte.'));
 		}
 		echo json_encode($lines);
 	} catch(PDOException $e) {
@@ -156,7 +156,7 @@ function getLineRoutes($line, $app) {
 		if(!$routes)
 		{
 			$app->response->setStatus(404);
-			$routes = array('error' => array('msg' => 'Routes not found'));
+			$routes = array('error' => array('msg' => 'No se encontraron rutas para esta línea.'));
 		}
 		echo json_encode($routes);
 	} catch(PDOException $e) {
@@ -198,7 +198,7 @@ function findLinesByCoordinates($app) {
 		if(!$lines)
 		{
 			$app->response->setStatus(404);
-			$lines = array('error' => array('msg' => 'Lines not found'));
+			$lines = array('error' => array('msg' => 'No hubo resultados para la búsqueda. Intenta nuevamente.'));
 		}
 		echo json_encode($lines);
 	} catch(PDOException $e) {

@@ -106,88 +106,67 @@
       
     </div>
     <!-- / wrapper -->
+    <script id="error-tpl" type="text/x-handlebars-template">
+      <div class="alert alert-danger">
+        <h4><i class="fa fa-warning"></i> Uoops, ocurrió un error</h4>
+        <p class="well well-sm well-error">{{error.msg}}</p>
+      </div>
+    </script>
 
     <script id="lines-tpl" type="text/x-handlebars-template">
-      {{#if this}}
-        <div class="result-list media">
-          <ul class="list-unstyled">
-            {{#each this}}
-            <li title="{{name}}">
-              {{trunc name 25}}
-              <span class="pull-right">
-                <a href="/transports/{{transport_id}}/lines/{{id}}/plot" class="road btn btn-xs btn-default">
-                  <i class="fa fa-road"></i> Ver
-                </a>
-              </span>
-            </li>
-            {{/each}}
-          </ul>
-        </div>
-      {{else}}
-        <div class="alert alert-info">
-          <p class="text-center"><i class="fa fa-warning fa-5x"></i></p>
-          <p class="text-center">
-            No hubo resultados
-          </p>
-        </div>
-      {{/if}}
+      <div class="result-list media">
+        <ul class="list-unstyled">
+          {{#each this}}
+          <li title="{{name}}">
+            {{trunc name 25}}
+            <span class="pull-right">
+              <a href="/transports/{{transport_id}}/lines/{{id}}/plot" class="road btn btn-xs btn-default">
+                <i class="fa fa-road"></i> Ver
+              </a>
+            </span>
+          </li>
+          {{/each}}
+        </ul>
+      </div>
     </script>
 
     <script id="transports-tpl" type="text/x-handlebars-template">
-      {{#if this}}
-        <ul class="transports-list media-list">
-        {{#each this}}
-          <li class="media">
-            <img class="media-object pull-left" src="{{image}}" />
-            <div class="media-body">
-              <h5 class="media-heading">{{name}}</h5>
-              <ul class="fa-ul transport-info">
-                {{#if address}}<li><i class="fa-li fa fa-home"></i> {{address}}</li>{{/if}}
-                {{#if phone}}<li><i class="fa-li fa fa-phone"></i> {{phone}}</li>{{/if}}
-                {{#if url}}<li><i class="fa-li fa fa-globe"></i> <a href="{{url}}">Ver sitio web</a></li>{{/if}}
-              </ul>
-              <a href="/transports/{{id}}/lines" class="getTransportLines btn btn-xs btn-default">
-                Ver líneas
-              </a>
-            </div>
-            <div class="result-list lines-{{id}}"></div>
-          </li>       
-        {{/each}}
-        </ul>
-      {{else}}
-        <div class="alert alert-info">
-          <p class="text-center"><i class="fa fa-warning fa-5x"></i></p>
-          <p class="text-center">
-            No hubo resultados
-          </p>
-        </div>
-      {{/if}}
+      <ul class="transports-list media-list">
+      {{#each this}}
+        <li class="media">
+          <img class="media-object pull-left" src="{{image}}" />
+          <div class="media-body">
+            <h5 class="media-heading">{{name}}</h5>
+            <ul class="fa-ul transport-info">
+              {{#if address}}<li><i class="fa-li fa fa-home"></i> {{address}}</li>{{/if}}
+              {{#if phone}}<li><i class="fa-li fa fa-phone"></i> {{phone}}</li>{{/if}}
+              {{#if url}}<li><i class="fa-li fa fa-globe"></i> <a href="{{url}}">Ver sitio web</a></li>{{/if}}
+            </ul>
+            <a href="/transports/{{id}}/lines" class="getTransportLines btn btn-xs btn-default">
+              Ver líneas
+            </a>
+          </div>
+          <div class="result-list lines-{{id}}"></div>
+        </li>       
+      {{/each}}
+      </ul>
     </script>
 
     <script id="results-tpl" type="text/x-handlebars-template">
-      {{#if this}}
-        <div class="result-list media">
-          <ul class="list-unstyled">
-            {{#each this}}
-            <li title="{{name}}">
-              {{trunc name 25}}
-              <span class="pull-right">
-                <a href="/search/results/lines/{{id}}/plot" class="road btn btn-xs btn-default">
-                  <i class="fa fa-road"></i> Ver
-                </a>
-              </span>
-            </li>
-            {{/each}}
-          </ul>
-        </div>
-      {{else}}
-        <div class="alert alert-info">
-          <p class="text-center"><i class="fa fa-warning fa-5x"></i></p>
-          <p class="text-center">
-            No hubo resultados
-          </p>
-        </div>
-      {{/if}}
+      <div class="result-list media">
+        <ul class="list-unstyled">
+          {{#each this}}
+          <li title="{{name}}">
+            {{trunc name 25}}
+            <span class="pull-right">
+              <a href="/search/results/lines/{{id}}/plot" class="road btn btn-xs btn-default">
+                <i class="fa fa-road"></i> Ver
+              </a>
+            </span>
+          </li>
+          {{/each}}
+        </ul>
+      </div>
     </script>
 	
     <!-- google maps -->
@@ -196,6 +175,17 @@
     </script>
 
     <!-- application -->
+    <?php if(isset($_SERVER['SLIM_MODE'])): ?>
     <script src="/static/js/application.min.js"></script>
+    <?php else: ?>
+    <script src="/static/js/libs/jquery.min.js"></script>
+    <script src="/static/js/libs/bootstrap.min.js"></script>
+    <script src="/static/js/libs/handlebars-v1.1.2.js"></script>
+    <script src="/static/js/libs/select2.min.js"></script>
+    <script src="/static/js/libs/select2_locale_es.js"></script>
+    <script src="/static/js/libs/page.js"></script>
+    <script src="/static/js/libs/superagent.js"></script>
+    <script src="/static/js/application.js"></script>
+    <?php endif ?>
   </body>
 </html>

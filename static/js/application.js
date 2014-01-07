@@ -185,6 +185,11 @@
     return text.substring(0,size) + " ...";
   });
 
+  var errorHandler = function(error) {
+    console.log('Ocurrió un error:',error.error.msg);
+    render('error-tpl','.transports',error);
+  }
+
   // ROUTES RELATED FUNCTIONS
 
   // index route
@@ -205,9 +210,12 @@
         request
           .get(endpoints.transports)
           .end(function(res){
-            ctx.state.transports = res.body;
-            ctx.save();
-            next();
+            if(!res.error) {
+              ctx.state.transports = res.body;
+              ctx.save();
+              next();
+            }
+            else errorHandler(res.body);
           });
       }
     },
@@ -221,9 +229,12 @@
         request
           .get(url)
           .end(function(res){
-            ctx.state.transport = res.body;
-            ctx.save();
-            next();
+            if(!res.error) {
+              ctx.state.transport = res.body;
+              ctx.save();
+              next();
+            }
+            else errorHandler(res.body);
           });
       }
     },
@@ -242,15 +253,17 @@
       var transport  = endpoints.lines.replace(':id',ctx.params.tid);
 
       request
-        .get(routes)
+        .get(transport)
         .end(function(res){
-          draw(res.body);
+          if(!res.error) render('lines-tpl','.transports',res.body);
+          else errorHandler(res.body);
         });
 
       request
-        .get(transport)
+        .get(routes)
         .end(function(res){
-          render('lines-tpl','.transports',res.body);
+          if(!res.error) draw(res.body);
+          else errorHandler(res.body);
         });
     }
   }
@@ -271,7 +284,8 @@
         end: to
       })
       .end(function(res){
-        render('results-tpl','.transports',res.body);
+        if(!res.error) render('results-tpl','.transports',res.body);
+        else errorHandler(res.body);
       });
     next();
   }
@@ -281,7 +295,8 @@
     request
       .get(routes)
       .end(function(res){
-        draw(res.body);
+        if(!res.error) draw(res.body);
+        else errorHandler(res.body);
       });
   }
 

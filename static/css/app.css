@@ -85,8 +85,21 @@ html, body {
 	font-weight: normal;
 }
 
-.transports-list:last-child {
+.transports-list {
 	margin-bottom:0;
+}
+
+.transports-list li:last-child {
+	margin-bottom: 0;
+}
+
+.result-list ul {
+	margin-bottom: 0;
+}
+
+.well-error {
+	background: white;
+	border-color:#A94442;
 }
 
 .media {
@@ -95,6 +108,10 @@ html, body {
 	padding: 10px;
 	margin:0;
 	margin-bottom:5px;
+}
+
+.result-list.media {
+	margin-bottom:0;
 }
 
 .media img {
@@ -126,12 +143,17 @@ div[class*='lines-'] {
 
 div[class*='lines-'] ul {
 	clear:both;
+	margin-bottom: 0;
 }
 
 .result-list ul li {
 	font-size: 11px;
 	padding: 8px 0;
 	border-bottom:1px solid #EEE;
+}
+
+.result-list ul li:last-child {
+	border-bottom:none;
 }
 
 .result-list ul li a {

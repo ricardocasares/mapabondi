@@ -15,7 +15,7 @@ require 'vendor/autoload.php';
 // slim instance
 $app = new \Slim\Slim(array(
 	'templates.path' => 'views',
-	'mode' => isset($_SERVER['SLIM_MODE']) ? $_SERVER['SLIM_MODE'] : 'development'
+	'mode' => getenv('SLIM_MODE') ? getenv('SLIM_MODE') : 'development'
 ));
 
 // set production configuration

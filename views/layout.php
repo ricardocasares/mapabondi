@@ -175,7 +175,7 @@
     </script>
 
     <!-- application -->
-    <?php if(isset($_SERVER['SLIM_MODE'])): ?>
+    <?php if(getenv('SLIM_MODE')): ?>
     <script src="/static/js/application.min.js"></script>
     <?php else: ?>
     <script src="/static/js/libs/jquery.min.js"></script>

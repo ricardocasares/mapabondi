@@ -91,6 +91,7 @@ function getTransports($app) {
 		}
 		echo json_encode($transports);
 	} catch(PDOException $e) {
+		$app->response->setStatus(500);
 		echo json_encode(array('error' => array('msg' => $e->getMessage())));
 	}
 }
@@ -113,6 +114,7 @@ function getTransportById($transport, $app) {
 		}
 		echo json_encode($transport);
 	} catch(PDOException $e) {
+		$app->response->setStatus(500);
 		echo json_encode(array('error' => array('msg' => $e->getMessage())));
 	}
 }
@@ -135,6 +137,7 @@ function getTransportLines($transport, $app) {
 		}
 		echo json_encode($lines);
 	} catch(PDOException $e) {
+		$app->response->setStatus(500);
 		echo json_encode(array('error' => array('msg' => $e->getMessage())));
 	}
 }
@@ -153,10 +156,11 @@ function getLineRoutes($line, $app) {
 		if(!$routes)
 		{
 			$app->response->setStatus(404);
-			$routes = array('error' => array('msg' => 'Route not found'));
+			$routes = array('error' => array('msg' => 'Routes not found'));
 		}
 		echo json_encode($routes);
 	} catch(PDOException $e) {
+		$app->response->setStatus(500);
 		echo json_encode(array('error' => array('msg' => $e->getMessage())));
 	}
 }
@@ -198,6 +202,7 @@ function findLinesByCoordinates($app) {
 		}
 		echo json_encode($lines);
 	} catch(PDOException $e) {
+		$app->response->setStatus(500);
 		echo json_encode(array('error' => array('msg' => $e->getMessage())));
 	}
 }
